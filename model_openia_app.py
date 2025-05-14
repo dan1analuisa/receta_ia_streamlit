@@ -1,40 +1,32 @@
+from openai import OpenAI
 import streamlit as st
-import openai
-import os
 
-# Usar la clave API desde los secretos
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+st.title("AI Para Recetas y Nutrición")
+st.markdown("Pregunta sobre recetas con ingredientes específicos y consejos de salud")
 
-client = openai
+api_key = st.text_input("Introduce tu OpenAI API Key:", type="password")
 
-st.title("IA para recetas :3")
+if api_key:
+    client = OpenAI(api_key=api_key)  # así se usa desde v1.0+
 
-st.markdown(
-    "Haz preguntas sobre qué recetas puedes realizar con ciertos ingredientes o también puedes pedir ideas de recetas. "
-    "Toma en cuenta que la IA solo responde si la pregunta es relacionada al tema."
-)
+    question = st.text_input("Escribe tu pregunta:")
 
-question = st.text_input("Escribe tu pregunta:")
+    prompt = (
+        "Eres una inteligencia artificial experta en cocina y nutrición. Tu objetivo es proporcionar recetas basadas exclusivamente en los ingredientes mencionados por el usuario, sin agregar ingredientes adicionales. "
+        "Además, ofreces consejos de salud enfocados en una alimentación equilibrada, agrupando los alimentos según sus características nutricionales y sugiriendo cantidades adecuadas para una dieta saludable. "
+        "También puedes brindar recomendaciones sobre técnicas de preparación, combinaciones beneficiosas y hábitos alimenticios que mejoran el bienestar general. "
+        "Si te preguntan sobre otro tema fuera de cocina y nutrición, responde con amabilidad: 'No sé sobre eso, pero si quieres, te puedo ayudar con una receta 😊'. "
+        "Asegúrate de que tus respuestas sean claras, prácticas y alineadas con el bienestar del usuario."
+    )
 
-prompt = (
-    "Eres una IA experta en dar recetas de cocina con los ingredientes que te comentan que tienen, "
-    "pero no puedes añadir ingredientes que no te mencionen. "
-    "Además, das buenos consejos de salud para que lleven una buena nutrición. "
-    "También sabes identificar en qué se agrupa cada alimento y por ende "
-    "puedes aconsejar a la gente qué cantidad de cada comida puede comer. "
-    "Si te preguntan sobre cualquier otro tema, responde: "
-    "'No sé sobre eso, pero si quieres te puedo ayudar con una receta :)'"
-)
-
-if question:
-    with st.spinner("Generando respuesta..."):
-        response = client.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": question}
-            ]
-        )
-        st.success("Respuesta:")
-        st.markdown(response.choices[0].message["content"])
-
+    if question:
+        with st.spinner("Generando respuesta..."):
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": question}
+                ]
+            )
+            st.success("Respuesta:")
+            st.markdown(response.choices[0].message.content)
