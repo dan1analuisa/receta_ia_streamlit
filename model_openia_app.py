@@ -1,7 +1,7 @@
 from openai import OpenAI
 import streamlit as st
 
-st.title("IA para recetas :3")
+st.title("IA para recetas 🍲")
 
 st.markdown("""
 Haz preguntas sobre qué recetas puedes realizar con ciertos ingredientes,
