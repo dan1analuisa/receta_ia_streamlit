@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import os
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = 'clave aqui'
 client = OpenAI()
 
 st.title("IA para recetas :3")
