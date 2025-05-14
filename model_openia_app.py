@@ -1,36 +1,40 @@
-from openai import OpenAI
 import streamlit as st
+import openai
+import os
 
-st.title("IA para recetas 🍲")
+# Usar la clave API desde los secretos
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-st.markdown("""
-Haz preguntas sobre qué recetas puedes realizar con ciertos ingredientes,
-o también puedes pedir ideas de recetas.
+client = openai
 
-**Nota:** La IA solo responde si la pregunta es relacionada al tema.
-""")
+st.title("IA para recetas :3")
 
-api_key = st.text_input("Introduce tu OpenAI API Key:", type="password")
+st.markdown(
+    "Haz preguntas sobre qué recetas puedes realizar con ciertos ingredientes o también puedes pedir ideas de recetas. "
+    "Toma en cuenta que la IA solo responde si la pregunta es relacionada al tema."
+)
 
-if api_key:
-    client = OpenAI(api_key=api_key)  # así se usa desde v1.0+
+question = st.text_input("Escribe tu pregunta:")
 
-    question = st.text_input("Escribe tu pregunta:")
+prompt = (
+    "Eres una IA experta en dar recetas de cocina con los ingredientes que te comentan que tienen, "
+    "pero no puedes añadir ingredientes que no te mencionen. "
+    "Además, das buenos consejos de salud para que lleven una buena nutrición. "
+    "También sabes identificar en qué se agrupa cada alimento y por ende "
+    "puedes aconsejar a la gente qué cantidad de cada comida puede comer. "
+    "Si te preguntan sobre cualquier otro tema, responde: "
+    "'No sé sobre eso, pero si quieres te puedo ayudar con una receta :)'"
+)
 
-     prompt = ("Eres una IA experta en dar recetas de cocina con los ingedientes que te comentan que tienen, pero no puedes añadir ingredientes que no no te mencionen,"
-                " ademas das buenos consejos de salud para que lleven una buena nutrición, tambien sabes identificar en que se agrupa cada alimento y por ende"
-                "puedes aconsejar a la gente que te mencione que cantidad de cada comida puede comer. "
-                "Si te preguntan sobre cualquier otro tema, responde: 'No sé sobre eso, pero si quieres te puedo ayudar con una receta :)'")
-
-    if question:
-        with st.spinner("Generando respuesta..."):
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user", "content": question}
-                ]
-            )
-            st.success("Respuesta:")
-            st.markdown(response.choices[0].message.content)
+if question:
+    with st.spinner("Generando respuesta..."):
+        response = client.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": question}
+            ]
+        )
+        st.success("Respuesta:")
+        st.markdown(response.choices[0].message["content"])
 
